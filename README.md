@@ -1,78 +1,55 @@
 # Lovelace animated weather card for WRAL Weather
 
-This is a modified copy of the Lovelace animated weather card from [brankragten] (https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
+This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component for Home Assistant](https://github.com/tommyjlong/wral_weather).
 
-This card also uses the awesome [animated SVG weather icons by amCharts](https://www.amcharts.com/free-animated-svg-weather-icons/).
-It also adds an animated fog svg from [Jason Parthum](https://community.home-assistant.io/t/animated-weather-icons-svg-for-all-dark-sky-values/150702) that has been modified.
+This card uses the [animated SVG weather icons by amCharts](https://www.amcharts.com/free-animated-svg-weather-icons/) but also adds an animated fog.svg from [Jason Parthum](https://community.home-assistant.io/t/animated-weather-icons-svg-for-all-dark-sky-values/150702) that has been modified.
 
-![Weather Card](https://github.com/bramkragten/custom-ui/blob/master/weather-card/weather-card.gif?raw=true)
+An example (without the animation) of what the card would look like:
+![Weather Card](https://github.com/tommyjlong/wral-weather-card/blob/master/wral-weather-card.jpg?raw=true)
 
-## Installation:
+# Installation:
+The recommended way to install is to use HACS. Alternatively is can be manually installed.
 
-You have 2 options, hosted or self hosted (manual). The first option needs internet and will update itself.
+**Note:** The Original Weather Card supports using the Lovelace UI in "Storage" mode.  It uses the weather-card.editor for this which is NOT being supported for the wral-weather-card.
 
-### If you are using Firefox:
+**Note:** The Original Weather Card allowed you to get some of its resources over the internet in what it called a "Hosted" based installation.  This is NOT supported for the wral-weather-card.
+## HACS
+Go to the HACS Settings, and under ADD CUSTOM RESPOSITORY, paste ```https://github.com/tommyjlong/wral-weather-card ```, and chose ```Plugin``` for the Category.  Hit save, and a new entry titled **[plugin]
+tommyjlong/wral-weather-card** should be created under CUSTOM REPOSITORY.  Click on the new entry and a page should appear which will allow you to install this.  Follow the instructions at the very bottom of the page for adding the url and type to the lovelace configuration.
 
-Firefox < 66 does not support all the needed functions yet for the editor.
-You change this by enabling `javascript.options.dynamicImport` in `about:config`.
-Or use the version without the editor: [Version without editor](https://raw.githubusercontent.com/bramkragten/custom-ui/58c41ad177b002e149497629a26ea10ccfeebcd0/weather-card/weather-card.js)
+* If you want to manually install, place the files located in the `custom_components/wral_weather/` folder into the `<path-to-haconfig>/custom_components/wral_weather/` directory.  Reboot HA.
 
-# Hosted:
+## Manual:
 
-Add the following to resources in your lovelace config:
-
-```yaml
-- url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
-  type: module
-```
-
-# Manual:
-
-1. Download the [weather-card.js](https://raw.githubusercontent.com/bramkragten/weather-card/v1.2.0/dist/weather-card.js) to `/config/www/custom-lovelace/weather-card/`. (or an other folder in `/config/www/`)
-2. Save, the [amCharts icons](https://www.amcharts.com/free-animated-svg-weather-icons/) (The contents of the folder "animated") under `/config/www/custom-lovelace/weather-card/icons/` (or an other folder in `/config/www/`)
-3. If you use Lovelace in storage mode, and want to use the editor, download the [weather-card-editor.js](https://raw.githubusercontent.com/bramkragten/weather-card/v1.2.0/dist/weather-card-editor.js) to `/config/www/custom-lovelace/weather-card/`. (or the folder you used above)
+1. Download the [wral-weather-card.js](https://github.com/tommyjlong/wral-weather-card/blob/master/dist/wral-weather-card.js) to `HACONFIGDIR/www/custom-lovelace/wral-weather-card/`. (or in some other folder under `/HACONFIGDIR/www/`)
+2. Save, the [Animated Icons](https://github.com/tommyjlong/wral-weather-card/tree/master/dist/icons/) under `HACONFIGDIR/www/custom-lovelace/weather-card/icons/` (or in some other folder in `HACONFIGDIR/www/`)
 
 Add the following to resources in your lovelace config:
 
 ```yaml
 resources:
-  - url: /local/custom-lovelace/weather-card/weather-card.js
+  - url: /local/custom-lovelace/wral-weather-card/wral-weather-card.js
     type: module
 ```
 
-## Configuration:
+# Lovelace Configuration:
 
-And add a card with type `custom:weather-card`:
-
-```yaml
-type: custom:weather-card
-entity: weather.yourweatherentity
-name: Optional name
-```
-
-If you want to use your local icons add the location to the icons:
+When adding a card, make the type `custom:wral-weather-card`:
 
 ```yaml
-type: custom:weather-card
-entity: weather.yourweatherentity
-icons: "/local/custom-lovelace/weather-card/icons/"
-```
-
-You can choose wich elements of the weather card you want to show:
-
-The 3 different rows, being:
-
-- The current weather icon, the current temperature and title
-- The details about the current weather
-- The 5 day forecast
-
-```yaml
-type: custom:weather-card
-entity: weather.yourweatherentity
+type: custom:wral-weather-card
+entity: weather.yourWralWeatherEntity
+name: Optional-name
+icons: "/local/DIRECTORY_X/wral-weather-card/icons/"
 current: true
 details: false
 forecast: true
 ```
+- ```name:``` This is optional, but if present will show in the card.
+- ```icons:``` Unlike the Original Weather Card which gave the option to use the icons locally, for the WRAL Weather Card,it is required.  For HACS: Set this to ``icons: "/local/custom-lovelace/weather-card/icons/"```
+- ```current:``` Show the current weather icon, the current temperature and title
+- ```details:``` The details about the current WRAL weather observations
+- ```forecast:``` The 5 day forecast
 
 If you want to show the sunrise and sunset times, make sure the `sun` component is enabled:
 
@@ -82,7 +59,7 @@ sun:
 ```
 
 # Known Quirks
-After around 6:00pm, WRAL stops sending the current day's forecast high temperature.  This results in the card showing a blank high temperature.
+After around 6:00pm, WRAL stops sending the current day's forecast high temperature.  This results in the card showing a blank high temperature for the first day's forecast.
 # Changes to Orginal Weather-Card (v1.4.1)
 - Adds animated "fog.svg" to icons.
 - Changes Class of WeatherCard to WRALWeatherCard
@@ -92,10 +69,10 @@ After around 6:00pm, WRAL stops sending the current day's forecast high temperat
 - Changes default icon location to /local/community/wral-weather-card/icons/ {TBF}
 
 # Credits
-- Original Weather Card: This is a modified copy of the Lovelace animated weather card from [brankragten] (https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
+- Original Weather Card: This is a modified copy of the Lovelace animated weather card from [brankragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
 - amCharts: Except where noted, the animated icons were created by amCharts (https://www.amcharts.com/)
 and is licensed under Creative Commons Attribution 4.0 International Public License:
 https://creativecommons.org/licenses/by/4.0/
 If in doubt, email amCharts at contact@amcharts.com
-- fog animated icon: Original from  [Jason Parthum](https://community.home-assistant.io/t/animated-weather-icons-svg-for-all-dark-sky-values/150702) that has been modified.
+- fog animated icon: Original from  [Jason Parthum](https://community.home-assistant.io/t/animated-weather-icons-svg-for-all-dark-sky-values/150702) that has been modified slightly.
 

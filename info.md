@@ -1,77 +1,44 @@
-# Lovelace animated weather card
+# Lovelace animated weather card for WRAL Weather
 
-Originally created for the [old UI](https://community.home-assistant.io/t/custom-ui-weather-state-card-with-a-question/23008) converted by @arsaboo and @ciotlosm to [Lovelace](https://community.home-assistant.io/t/custom-ui-weather-state-card-with-a-question/23008/291) and now converted to Lit to make it even better.
+This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component for Home Assistant](https://github.com/tommyjlong/wral_weather).
 
-This card uses the awesome [animated SVG weather icons by amCharts](https://www.amcharts.com/free-animated-svg-weather-icons/).
+For details, check out the [README.md](https://github.com/tommyjlong/wral-weather-card/blob/master/README.md)
 
-![Weather Card](https://github.com/bramkragten/custom-ui/blob/master/weather-card/weather-card.gif?raw=true)
+An example (without the animation) of what the card would look like:
+![Weather Card](https://github.com/tommyjlong/wral-weather-card/blob/master/wral-weather-card.jpg?raw=true)
 
-Thanks for all picking this card up.
+# Installation:
+The recommended way to install is to use HACS. Alternatively is can be manually installed.
 
-## Installation:
+Go to the HACS Settings, and under ADD CUSTOM RESPOSITORY, paste ```https://github.com/tommyjlong/wral-weather-card ```, and chose ```Plugin``` for the Category.  Hit save, and a new entry titled **[plugin]
+tommyjlong/wral-weather-card** should be created under CUSTOM REPOSITORY.  Click on the new entry and a page should appear which will allow you to install this.  Follow the instructions at the very bottom of the page for adding the url and type to the lovelace configuration.
 
-### If you are using Firefox:
+Be sure to add the resources in your lovelace config per the instructions at the bottom of the HACS page.
 
-Firefox < 66 does not support all the needed functions yet for the editor.
-You change this by enabling `javascript.options.dynamicImport` in `about:config`.
+* If you want to manually install, check out the [README.md](https://github.com/tommyjlong/wral-weather-card/blob/master/README.md)
 
-Add the following to resources in your lovelace config:
+# Lovelace Configuration:
 
-```yaml
-resources:
-  - url: /community_plugin/weather-card/weather-card.js
-    type: module
-```
-
-## Configuration:
-
-And add a card with type `custom:weather-card`:
+When adding a card, make the type `custom:wral-weather-card`:
 
 ```yaml
-- type: custom:weather-card
-  entity: weather.yourweatherentity
-  name: Optional name
-```
-
-If you want to use your local icons add the location to the icons:
-
-```yaml
-- type: custom:weather-card
-  entity: weather.yourweatherentity
-  icons: "/community_plugin/weather-card/icons/"
-```
-
-You can choose wich elements of the weather card you want to show:
-
-The 3 different rows, being:
-
-- The current weather icon, the current temperature and title
-- The details about the current weather
-- The 5 day forecast
-
-```yaml
-type: custom:weather-card
-entity: weather.yourweatherentity
+type: custom:wral-weather-card
+entity: weather.yourWralWeatherEntity
+name: Optional-name
+icons: "/local/DIRECTORY_X/wral-weather-card/icons/"
 current: true
 details: false
 forecast: true
 ```
+- ```name:``` This is optional, but if present will show in the card.
+- ```icons:``` Unlike the Original Weather Card which gave the option to use the icons locally, for the WRAL Weather Card,it is required.  For HACS: Set this to ``icons: "/local/custom-lovelace/weather-card/icons/"```
+- ```current:``` Show the current weather icon, the current temperature and title
+- ```details:``` The details about the current WRAL weather observations
+- ```forecast:``` The 5 day forecast
 
 If you want to show the sunrise and sunset times, make sure the `sun` component is enabled:
 
 ```yaml
 # Example configuration.yaml entry
 sun:
-```
-
-### Dark Sky:
-
-When using Dark Sky you should put the mode to `daily` if you want a daily forecast with highs and lows.
-
-```yaml
-# Example configuration.yaml entry
-weather:
-  - platform: darksky
-    api_key: YOUR_API_KEY
-    mode: daily
 ```
