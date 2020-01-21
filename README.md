@@ -1,4 +1,4 @@
-# Lovelace animated weather card for WRAL Weather
+# Lovelace Animated Weather Card for WRAL Weather
 
 This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component for Home Assistant](https://github.com/tommyjlong/wral_weather).
 
@@ -14,8 +14,10 @@ The recommended way to install is to use HACS. Alternatively, this can be manual
 
 **Note:** The Original Weather Card allowed you to get some of its resources over the internet in what it called a "Hosted" based installation.  This is NOT supported for the wral-weather-card.
 ## HACS
-Go to the HACS Settings, and under ADD CUSTOM RESPOSITORY, paste ```https://github.com/tommyjlong/wral-weather-card ```, and chose ```Plugin``` for the Category.  Hit save, and a new entry titled **[plugin]
-tommyjlong/wral-weather-card** should be created under CUSTOM REPOSITORY.  Click on the new entry and a page should appear which will allow you to install this.  Make sure to follow the instructions at the very bottom of the page for adding the url and type to the lovelace configuration.
+- Go to the HACS Settings, and under ADD CUSTOM RESPOSITORY, paste ```https://github.com/tommyjlong/wral-weather-card ```, and chose ```Plugin``` for the Category.  Hit save, and a new entry titled **[plugin]
+tommyjlong/wral-weather-card** should be created under CUSTOM REPOSITORY.  
+- Click on the new entry and a page should appear which will allow you to install this.  
+- Make sure to follow the instructions at the very bottom of the page for adding the url and type to the lovelace configuration.
 
 ## Manual:
 1. Download the [wral-weather-card.js](https://github.com/tommyjlong/wral-weather-card/blob/master/dist/wral-weather-card.js) to `HACONFIGDIR/www/custom-lovelace/wral-weather-card/` (or in some other folder under `/HACONFIGDIR/www/`).
@@ -39,11 +41,11 @@ entity: weather.yourWralWeatherEntity
 name: Optional-name
 icons: "/local/DIRECTORY_X/wral-weather-card/icons/"
 current: true
-details: false
+details: true
 forecast: true
 ```
-- ```name:``` This is optional, but if present will show in the card.
-- ```icons:``` Unlike the Original Weather Card which gave the option to use the icons locally, for the WRAL Weather Card it is REQUIRED.  For HACS: Set this to ``icons: "/local/community/weather-card/icons/"```
+- ```name:``` This is optional, but if present will show on the face of the card.
+- ```icons:``` Location of the icons.  Unlike the Original Weather Card which gave the option to use the icons locally, for the WRAL Weather Card it is REQUIRED.  For HACS: Set this to ```icons: "/local/community/wral-weather-card/icons/"```
 - ```current:``` Show the current weather icon, the current temperature and title
 - ```details:``` Show the details about the current WRAL weather observations, such as wind, and humidity.
 - ```forecast:``` Show the 5 day forecast.
