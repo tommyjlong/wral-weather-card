@@ -32,8 +32,8 @@ details: true
 forecast: true
 ```
 - ```name:``` This is optional, but if present will show on the face of the card.
-- ```icons:``` Location of the icons.  Unlike the Original Weather Card which gave the option to use the icons locally, for the WRAL Weather Card it is REQUIRED.  For HACS: Set this to ```icons: "/local/community/wral-weather-card/icons/"```
-- ```current:``` Show the current weather icon, the current temperature and title
+- ```icons:``` Location of the icons.  By default, the icons are located where HACS places them which is at ```/local/community/wral-weather-card/icons/```.  Unlike the Original Weather Card which gave the option to use the icons locally, the WRAL Weather Card requires the icons to be local.
+- ```current:``` Show the current weather icon, the current temperature and title.
 - ```details:``` Show the details about the current WRAL weather observations, such as wind, and humidity.
 - ```forecast:``` Show the 5 day forecast.
 

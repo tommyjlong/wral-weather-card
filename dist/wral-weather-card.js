@@ -310,7 +310,7 @@ class WRALWeatherCard extends LitElement {
     return `${
       this._config.icons
         ? this._config.icons
-        : "/local/custom-lovelace/wral-weather-card/icons/"
+        : "/local/community/wral-weather-card/icons/"
     }${
       sun && sun == "below_horizon"
         ? weatherIconsNight[condition]
