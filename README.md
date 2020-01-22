@@ -2,6 +2,8 @@
 
 This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component for Home Assistant](https://github.com/tommyjlong/wral_weather).
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+
 This card uses the [animated SVG weather icons by amCharts](https://www.amcharts.com/free-animated-svg-weather-icons/) but also adds an animated fog.svg from [Jason Parthum](https://community.home-assistant.io/t/animated-weather-icons-svg-for-all-dark-sky-values/150702) that has been modified.
 
 An example (without the animation) of what the card would look like:
