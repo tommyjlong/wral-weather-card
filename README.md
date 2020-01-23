@@ -59,18 +59,19 @@ If you want to show the sunrise and sunset times, make sure the `sun` component 
 sun:
 ```
 
-# Known Quirks
-After around 6:00pm, WRAL stops sending the current day's forecast high temperature.  This results in the card showing a blank high temperature for the first day's forecast.
+# Known Limitations/Quirks
+- After around 6:00pm, WRAL stops sending the current day's forecast high temperature.  This results in the card showing a blank high temperature for the first day's forecast.
+- Not all the animated SVG files are used.  This is due to the the WRAL Weather custom integration support for the standard hui-weather-forecast-card which has limited mappings of conditions to icons.
 # Changes to Orginal Weather-Card (v1.4.1)
 - Adds animated "fog.svg" to icons.
 - Changes Class of WeatherCard to WRALWeatherCard
 - Removes visibility as WRAL does not provide this.
 - Changed precipitation to precipitation probability as WRAL provides precipitation forecasts in probability percentages and not amounts.
 - Slight modifications to Title styling.
-- Changes default icon location to /local/community/wral-weather-card/icons/ {TBF}
+- Changes default icon location to /local/community/wral-weather-card/icons/ 
 
 # Credits
-- Original Weather Card: This is a modified copy of the Lovelace animated weather card from [brankragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
+- Original Weather Card: This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
 - amCharts: Except where noted, the animated icons were created by amCharts (https://www.amcharts.com/)
 and is licensed under Creative Commons Attribution 4.0 International Public License:
 https://creativecommons.org/licenses/by/4.0/
