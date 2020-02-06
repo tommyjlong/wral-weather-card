@@ -393,7 +393,7 @@ class WRALWeatherCard extends LitElement {
 
         .current {
           padding-top: 1.2em;
-          margin-bottom: 3.5em;
+          margin-bottom: 4.5em;
         }
 
         .variations {

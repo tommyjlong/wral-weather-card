@@ -69,6 +69,7 @@ sun:
 - Changed precipitation to precipitation probability as WRAL provides precipitation forecasts in probability percentages and not amounts.
 - Slight modifications to Title styling.
 - Changes default icon location to /local/community/wral-weather-card/icons/ 
+- Add more bottom margin to .current to prevent rain drops from bleeding over humidity.
 
 # Credits
 - Original Weather Card: This is a modified copy of the Lovelace animated weather card from [bramkragten](https://github.com/bramkragten/weather-card) to work with the [WRAL Weather custom component](https://github.com/tommyjlong/wral_weather).
