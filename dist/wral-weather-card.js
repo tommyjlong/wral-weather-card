@@ -103,6 +103,7 @@ function hasConfigOrEntityChanged(element, changedProps) {
 
 class WRALWeatherCard extends LitElement {
   static get properties() {
+    console.info("%c  WRAL WEATHER CARD  \n%c  Version 0.1.2    ","color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
     return {
       _config: {},
       hass: {}
@@ -377,7 +378,6 @@ class WRALWeatherCard extends LitElement {
           color: var(--primary-text-color);
           position: absolute;
           right: 1em;
-          top: 0.3em;
         }
 
         .tempc {
