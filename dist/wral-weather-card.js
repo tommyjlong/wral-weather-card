@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-const LitElement = Object.getPrototypeOf(customElements.get("hui-view"));
+const LitElement = Object.getPrototypeOf(customElements.get("hui-masonry-view"));
 const html = LitElement.prototype.html;
 
 const weatherIconsDay = {
@@ -103,7 +103,7 @@ function hasConfigOrEntityChanged(element, changedProps) {
 
 class WRALWeatherCard extends LitElement {
   static get properties() {
-    console.info("%c  WRAL WEATHER CARD  \n%c  Version 0.1.2    ","color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
+    console.info("%c  WRAL WEATHER CARD  \n%c  Version 0.1.3    ","color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
     return {
       _config: {},
       hass: {}
