@@ -25,13 +25,16 @@ tommyjlong/wral-weather-card** should be created under CUSTOM REPOSITORY.
 1. Download the [wral-weather-card.js](https://github.com/tommyjlong/wral-weather-card/blob/master/dist/wral-weather-card.js) to `HACONFIGDIR/www/custom-lovelace/wral-weather-card/` (or in some other folder under `/HACONFIGDIR/www/`).
 2. Save, the [Animated Icons](https://github.com/tommyjlong/wral-weather-card/tree/master/dist/icons/) to the `HACONFIGDIR/www/custom-lovelace/weather-card/icons/` directory (or in some other directory in `HACONFIGDIR/www/`)
 
-Add the following to resources in your lovelace config:
+Add the following to resources in your lovelace config (if using YAML mode):
 
 ```yaml
 resources:
   - url: /local/custom-lovelace/wral-weather-card/wral-weather-card.js
     type: module
 ```
+
+If using the UI (instead of YAML mode), goto Configuration->Lovelace Dashboards; Click on Resources tab
+and click on "+ Add Resource" and add this url and resource type as "Javascript Module".
 
 # Lovelace Configuration:
 
