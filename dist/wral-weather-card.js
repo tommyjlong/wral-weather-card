@@ -20,13 +20,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+const LitElement = Object.getPrototypeOf(customElements.get("hui-masonry-view"));
+const html = LitElement.prototype.html;
 */
 
+/* Replace this 
 import {
   LitElement,
   html,
   css
-} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
+} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module"; */
+
+const LitElement = customElements.get("ha-panel-lovelace")
+  ? Object.getPrototypeOf(customElements.get("ha-panel-lovelace"))
+  : Object.getPrototypeOf(customElements.get("hc-lovelace"));
+const html = LitElement.prototype.html;
+const css = LitElement.prototype.css;
+
 
 const weatherIconsDay = {
   clear: "day",
@@ -75,6 +85,17 @@ const windDirections = [
   "N"
 ];
 
+/* Add the following */
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "weather-card",
+  name: "Weather Card",
+  description: "A custom weather card with animated icons.",
+  preview: true,
+  documentationURL: "https://github.com/bramkragten/weather-card",
+});
+
+
 const fireEvent = (node, type, detail, options) => {
   options = options || {};
   detail = detail === null || detail === undefined ? {} : detail;
@@ -89,9 +110,16 @@ const fireEvent = (node, type, detail, options) => {
 };
 
 function hasConfigOrEntityChanged(element, changedProps) {
-  if (changedProps.has("_config")) {
+/*if (changedProps.has("_config")) { */
+  if (changedProps.has("_config") || changedProps.has("_forecastEvent")) {
     return true;
   }
+
+  /* add */
+  if (!changedProps.has("hass")) {
+    return false;
+  }
+
 
   const oldHass = changedProps.get("hass");
   if (oldHass) {
@@ -107,20 +135,67 @@ function hasConfigOrEntityChanged(element, changedProps) {
 
 class WRALWeatherCard extends LitElement {
   static get properties() {
-    console.info("%c  WRAL WEATHER CARD  \n%c  Version 0.1.4    ","color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
+    console.info("%c  WRAL WEATHER CARD  \n%c  Version 0.2.0    ","color: orange; font-weight: bold; background: black","color: white; font-weight: bold; background: dimgray");
     return {
       _config: {},
+     /* add forecastEvent */
+      _forecastEvent: {},
       hass: {}
     };
   }
 
+  /* Remove this
   static async getConfigElement() {
     await import("./weather-card-editor.js");
     return document.createElement("weather-card-editor");
+  } 
+  */
+
+  /* Add/Update this part*/
+  static getConfigForm() {
+    return {
+      schema: [
+        {
+          name: "entity",
+          required: true,
+          selector: { entity: { domain: "weather" } },
+        },
+        {
+          name: "name",
+          selector: { text: {} },
+        },
+        { name: "current", default: true, selector: { boolean: {} } },
+        { name: "details", default: true, selector: { boolean: {} } },
+        { name: "forecast", default: true, selector: { boolean: {} } },
+        {
+          name: "forecast_type",
+          default: "daily",
+          selector: {
+            select: {
+              options: [
+                { value: "hourly", label: "Hourly" },
+                { value: "daily", label: "Daily" },
+              ],
+            },
+          },
+        },
+        { name: "number_of_forecasts", default: 5, selector: { number: {} } },
+      ],
+    };
   }
 
+  /* Replace this
   static getStubConfig() {
     return {};
+  }
+  */
+  /* with this */
+  static getStubConfig(hass, unusedEntities, allEntities) {
+    let entity = unusedEntities.find((eid) => eid.split(".")[0] === "weather");
+    if (!entity) {
+      entity = allEntities.find((eid) => eid.split(".")[0] === "weather");
+    }
+    return { entity };
   }
 
   setConfig(config) {
@@ -130,9 +205,79 @@ class WRALWeatherCard extends LitElement {
     this._config = config;
   }
 
+
+  /* add this */
+  _needForecastSubscription() {
+    return (
+      this._config &&
+      this._config.forecast !== false &&
+      this._config.forecast_type &&
+      this._config.forecast_type !== "legacy"
+    );
+  }
+
+  /* add this */
+  _unsubscribeForecastEvents() {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  /* add this */
+  async _subscribeForecastEvents() {
+    this._unsubscribeForecastEvents();
+    if (
+      !this.isConnected ||
+      !this.hass ||
+      !this._config ||
+      !this._needForecastSubscription()
+    ) {
+      return;
+    }
+
+    this._subscribed = this.hass.connection.subscribeMessage(
+      (event) => {
+        this._forecastEvent = event;
+      },
+      {
+        type: "weather/subscribe_forecast",
+        forecast_type: this._config.forecast_type,
+        entity_id: this._config.entity,
+      }
+    );
+  }
+
+  /* add this */
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated && this._config && this.hass) {
+      this._subscribeForecastEvents();
+    }
+  }
+
+  /* add this */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeForecastEvents();
+  }
+
+
   shouldUpdate(changedProps) {
     return hasConfigOrEntityChanged(this, changedProps);
   }
+
+
+  /* add this */
+  updated(changedProps) {
+    if (!this.hass || !this._config) {
+      return;
+    }
+    if (changedProps.has("_config") || !this._subscribed) {
+      this._subscribeForecastEvents();
+    }
+  }
+
 
   render() {
     if (!this._config || !this.hass) {
@@ -141,6 +286,9 @@ class WRALWeatherCard extends LitElement {
 
     this.numberElements = 0;
 
+    /* update */
+    const lang = this.hass.selectedLanguage || this.hass.language;
+
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
@@ -148,7 +296,9 @@ class WRALWeatherCard extends LitElement {
         <style>
           .not-found {
             flex: 1;
-            background-color: yellow;
+        /* Replace this */
+        /*  background-color: yellow; */
+            background-color: var(--warning-color);
             padding: 8px;
           }
         </style>
@@ -160,13 +310,32 @@ class WRALWeatherCard extends LitElement {
       `;
     }
 
+  /* Replace this
     return html`
-      ${this.renderStyle()}
+      ${this.renderStyle()} 
       <ha-card @click="${this._handleClick}">
         ${this._config.current !== false ? this.renderCurrent(stateObj) : ""}
         ${this._config.details !== false ? this.renderDetails(stateObj) : ""}
         ${this._config.forecast !== false
           ? this.renderForecast(stateObj.attributes.forecast)
+          : ""}
+      </ha-card>
+    `; */
+
+    return html`
+      <ha-card @click="${this._handleClick}">
+        ${this._config.current !== false ? this.renderCurrent(stateObj) : ""}
+        ${this._config.details !== false
+          ? this.renderDetails(stateObj, lang)
+          : ""}
+        ${this._config.forecast !== false
+          ? this.renderForecast(
+              this._forecastEvent || {
+                forecast: stateObj.attributes.forecast,
+                type: this._config.hourly_forecast ? "hourly" : "daily",
+              },
+              lang
+            )
           : ""}
       </ha-card>
     `;
@@ -200,14 +369,33 @@ class WRALWeatherCard extends LitElement {
     `;
   }
 
-  renderDetails(stateObj) {
+/*renderDetails(stateObj) { */
+  renderDetails(stateObj, lang) {
     const sun = this.hass.states["sun.sun"];
     let next_rising;
     let next_setting;
 
+  /* Replace this
     if (sun) {
       next_rising = new Date(sun.attributes.next_rising);
       next_setting = new Date(sun.attributes.next_setting);
+    } */
+
+    if (sun) {
+      next_rising = new Date(sun.attributes.next_rising).toLocaleTimeString(
+        lang,
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      );
+      next_setting = new Date(sun.attributes.next_setting).toLocaleTimeString(
+        lang,
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      );
     }
 
     this.numberElements++;
@@ -234,18 +422,16 @@ class WRALWeatherCard extends LitElement {
           </span>
         </li>
         <li>
-          <!-- WRAL does not provide visibility.
           <ha-icon icon="mdi:weather-fog"></ha-icon> ${stateObj.attributes
             .visibility}<span class="unit">
             ${this.getUnit("length")}
           </span>
-          -->
         </li>
         ${next_rising
           ? html`
               <li>
                 <ha-icon icon="mdi:weather-sunset-up"></ha-icon>
-                ${next_rising.toLocaleTimeString()}
+                ${next_rising}
               </li>
             `
           : ""}
@@ -253,7 +439,7 @@ class WRALWeatherCard extends LitElement {
           ? html`
               <li>
                 <ha-icon icon="mdi:weather-sunset-down"></ha-icon>
-                ${next_setting.toLocaleTimeString()}
+                ${next_setting}
               </li>
             `
           : ""}
@@ -261,14 +447,24 @@ class WRALWeatherCard extends LitElement {
     `;
   }
 
+  /* Replace this 
   renderForecast(forecast) {
     if (!forecast || forecast.length === 0) {
       return html``;
-    }
+    } 
 
     const lang = this.hass.selectedLanguage || this.hass.language;
+   */
+
+  renderForecast(forecast, lang) {
+    if (!forecast || !forecast.forecast || forecast.forecast.length === 0) {
+      return html``;
+    }
+
 
     this.numberElements++;
+
+    /* Replace this 
     return html`
       <div class="forecast clear ${this.numberElements > 1 ? "spacer" : ""}">
         ${forecast.slice(0, 5).map(
@@ -308,6 +504,71 @@ class WRALWeatherCard extends LitElement {
           `
         )}
       </div>
+    `; */
+
+  /* with this */
+    return html`
+      <div class="forecast clear ${this.numberElements > 1 ? "spacer" : ""}">
+        ${forecast.forecast
+          .slice(
+            0,
+            this._config.number_of_forecasts
+              ? this._config.number_of_forecasts
+              : 5
+          )
+          .map(
+            (daily) => html`
+              <div class="day">
+                <div class="dayname">
+                  ${forecast.type === "hourly"
+                    ? new Date(daily.datetime).toLocaleTimeString(lang, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : new Date(daily.datetime).toLocaleDateString(lang, {
+                        weekday: "short",
+                      })}
+                </div>
+                <i
+                  class="icon"
+                  style="background: none, url('${this.getWeatherIcon(
+                    daily.condition.toLowerCase()
+                  )}') no-repeat; background-size: contain"
+                ></i>
+                <div class="highTemp">
+                  ${daily.temperature}${this.getUnit("temperature")}
+                </div>
+                ${daily.templow !== undefined
+                  ? html`
+                      <div class="lowTemp">
+                        ${daily.templow}${this.getUnit("temperature")}
+                      </div>
+                    `
+                  : ""}
+                ${!this._config.hide_precipitation &&
+                daily.precipitation !== undefined &&
+                daily.precipitation !== null
+                  ? html`
+                      <div class="precipitation">
+                        ${Math.round(daily.precipitation * 10) / 10}
+                        ${this.getUnit("precipitation")}
+                      </div>
+                    `
+                  : ""}
+                ${!this._config.hide_precipitation &&
+                daily.precipitation_probability !== undefined &&
+                daily.precipitation_probability !== null
+                  ? html`
+                      <div class="precipitation_probability">
+                        ${Math.round(daily.precipitation_probability)}
+                        ${this.getUnit("precipitation_probability")}
+                      </div>
+                    `
+                  : ""}
+              </div>
+            `
+          )}
+      </div>
     `;
   }
 
@@ -333,7 +594,8 @@ class WRALWeatherCard extends LitElement {
       case "precipitation":
         return lengthUnit === "km" ? "mm" : "in";
       case "precipitation_probability":
-        return lengthUnit === "km" ? "mm" : "\%";
+     /* return lengthUnit === "km" ? "mm" : "\%"; */
+        return "%";
       default:
         return this.hass.config.unit_system[measure] || "";
     }
@@ -347,9 +609,12 @@ class WRALWeatherCard extends LitElement {
     return 3;
   }
 
+  /* Replace this
   renderStyle() {
     return html`
-      <style>
+      <style> */
+  static get styles() {
+    return css`
         ha-card {
           cursor: pointer;
           margin: auto;
@@ -394,6 +659,19 @@ class WRALWeatherCard extends LitElement {
           margin-top: -14px;
           margin-right: 7px;
         }
+
+      @media (max-width: 460px) {
+        .title {
+          font-size: 2.2em;
+          left: 4em;
+        }
+        .temp {
+          font-size: 3em;
+        }
+        .tempc {
+          font-size: 1em;
+        }
+      }
 
         .current {
           padding-top: 1.2em;
@@ -509,7 +787,6 @@ class WRALWeatherCard extends LitElement {
           word-wrap: break-word;
           width: 30%;
         }
-      </style>
     `;
   }
 }
